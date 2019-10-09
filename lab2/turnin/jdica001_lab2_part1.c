@@ -1,7 +1,7 @@
 /*	Author: Joseph DiCarlantonio
- *  Partner(s) Name: 
+ *  Partner(s) Name: Raymond Chlebeck
  *	Lab Section:
- *	Assignment: Lab #  Exercise #
+ *	Assignment: Lab 2  Exercise 1
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -17,8 +17,6 @@
 #include "../header/scheduler.h"
 
 #define LED PORTA
-#define LEAD_LED PORTC
-#define SWITCH (PINB & 0x01)
 
 unsigned char tasksPeriod = 25;
 
@@ -34,21 +32,16 @@ Task *tasks[NUM_TASKS] = {
 
 // indicate whether transmitting or receiving
 char tFlag = 0;
+unsigned char usartPeriod;
+unsigned char ledPeriod;
 
 enum USARTStates
 {
     WAIT
 } usartState;
 
-#define SEC1 40
-#define SEC3 120
-
-#define SEC1_LEAD 20
-
 int usartSM(int state)
 {
-    static unsigned char count = 0;
-
     // transitions
     switch(state)    
     {
@@ -56,45 +49,17 @@ int usartSM(int state)
         {
             if(tFlag) 
             {
-                LEAD_LED = 1;
-
-                usartTask.period = 500;
-                ledTask.period = 1000;
-            
-                count = 0;
                 if(USART_IsSendReady(1)) 
                 {
                     USART_Send(ledValue, 1);
                 }
-                
-                if(USART_HasReceived(0))
-                {
-                    tFlag = 0; 
-                }
 
-                count++;
             }
             else
             {
-                LEAD_LED = 0;
-
-                usartTask.period = 25;
-                ledTask.period = 25;
-
                 if(USART_HasReceived(0)) 
                 { 
                     ledValue = USART_Receive(0);
-                    
-                    count = 0;
-                }
-                else if(!USART_HasReceived(0))
-                {
-                    count += 1; 
-                }
-
-                if(!(count < SEC3))
-                {
-                    tFlag = 1; 
                 }
             }
 
@@ -123,18 +88,8 @@ int ledSM(int state)
     // transitions
     switch(state)
     {
-        case LED_OFF: 
-        {
-            state = LED_ON; 
-            
-            break;
-        }
-        case LED_ON: 
-        {
-            state = LED_OFF; 
-            
-            break;
-        }
+        case LED_OFF: state = LED_ON; break;
+        case LED_ON: state = LED_OFF; break;
         default: state = LED_OFF;
     }
 
@@ -193,6 +148,17 @@ int main(void)
 
     initUSART(0);
     initUSART(1);
+
+    if(tFlag)
+    {
+        usartPeriod = 50;
+        ledPeriod = 1000;
+    }
+    else
+    {
+        usartPeriod = 25;
+        ledPeriod = 25;
+    }
 
     usartTask.state = WAIT;
     usartTask.period = 25;

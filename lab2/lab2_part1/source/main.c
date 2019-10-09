@@ -1,7 +1,7 @@
 /*	Author: Joseph DiCarlantonio
- *  Partner(s) Name: 
+ *  Partner(s) Name: Raymond Chlebeck
  *	Lab Section:
- *	Assignment: Lab #  Exercise #
+ *	Assignment: Lab 2  Exercise 1
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -31,7 +31,7 @@ Task *tasks[NUM_TASKS] = {
 };
 
 // indicate whether transmitting or receiving
-char tFlag = 1;
+char tFlag = 0;
 unsigned char usartPeriod;
 unsigned char ledPeriod;
 
@@ -161,12 +161,12 @@ int main(void)
     }
 
     usartTask.state = WAIT;
-    usartTask.period = usartPeriod;
+    usartTask.period = 25;
     usartTask.elapsedTime = usartTask.period;
     usartTask.TickFct = &usartSM;
 
     ledTask.state = LED_OFF;
-    ledTask.period = 1000;
+    ledTask.period = 25;
     ledTask.elapsedTime = ledTask.period;
     ledTask.TickFct = &ledSM;
 
