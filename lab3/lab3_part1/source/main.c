@@ -27,9 +27,9 @@ const unsigned long tasksPeriod = 1000;
 #define NUM_TASKS 2
 
 #define LED PORTA
-/*
+
 unsigned char value = 0;
-unsigned char tFlag = 1;
+unsigned char tFlag = 0;
 
 enum SpiStates
 {
@@ -48,7 +48,7 @@ int spiSM(int state)
             }
             else
             {
-                value = SPDR;
+                value = spdrValue;
             }
         }
     }
@@ -73,7 +73,7 @@ int valueSM(int state)
             }
             else
             {
-                PORTA = value; 
+                LED = value; 
             }
         }
     }
@@ -87,10 +87,9 @@ Task *tasks[NUM_TASKS] = {
     &spiTask,
     &valueTask
 };
-*/
+
 void TimerISR()
 {
-    /*
     unsigned char i;
     for(i = 0; i < NUM_TASKS; ++i)
     {
@@ -101,14 +100,10 @@ void TimerISR()
         }
         tasks[i]->elapsedTime += tasksPeriod;
     }
-    */
-    TimerFlag = 1;
 }
 
 int main(void) 
 { 
-    //    DDRB = 0xB0; PORTB = 0x4F;
-    //DDRB = 0x40; PORTB = 0xBF;
     DDRA = 0xFF; PORTA = 0x00;
     DDRC = 0xFF; PORTC = 0x00;
     DDRD = 0xFF; PORTD = 0x00;
@@ -116,30 +111,27 @@ int main(void)
     TimerSet(tasksPeriod);
     TimerOn();
 
-    SPI_MasterInit();
-//    SPI_ServantInit();
-/*
-    tasks[0]->state = SPI;
-    tasks[0]->period = 1000;
-    tasks[0]->elapsedTime = spiTask.period;
-    tasks[0]->TickFct = &spiSM;
+    if(tFlag)
+    {
+        SPI_MasterInit();
+    }
+    else
+    {
+        SPI_ServantInit();
+    }
+
+    spiTask.state = SPI;
+    spiTask.period = 1000;
+    spiTask.elapsedTime = spiTask.period;
+    spiTask.TickFct = &spiSM;
 
     valueTask.state = INCREMENT;
     valueTask.period = 1000;
     valueTask.elapsedTime = valueTask.period;
     valueTask.TickFct = &valueSM;
-*/
-    unsigned char var = 0;
 
     while (1)
     {
-        var = ~var;
-        SPI_MasterTransmit(var);
-
-//        LED = spdrValue; 
-        while(!TimerFlag);
-        TimerFlag = 0;
-
     }
 
     return 0;
