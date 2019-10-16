@@ -1,7 +1,7 @@
 /*	Author: Joseph DiCarlantonio
  *  Partner(s) Name: Raymond Chlebeck
  *	Lab Section:
- *	Assignment: Lab 3  Exercise 2 (master)
+ *	Assignment: Lab 3  Exercise 3 (master)
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example

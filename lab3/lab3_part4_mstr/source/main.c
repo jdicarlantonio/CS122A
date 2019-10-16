@@ -1,7 +1,7 @@
 /*	Author: Joseph DiCarlantonio
- *  Partner(s) Name: Raymond Chlebeck
+ *  Partner(s) Name: Brandon Tran
  *	Lab Section:
- *	Assignment: Lab 3  Exercise 2 (master)
+ *	Assignment: Lab 11  Exercise example
  *	Exercise Description: [optional - include for your own benefit]
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -30,6 +30,7 @@ const unsigned long tasksPeriod = 50;
 
 unsigned char data = 0;
 unsigned char tFlag = 1;
+unsigned char uCSelect = 1;
 
 enum SpiStates
 {
@@ -44,11 +45,11 @@ int spiSM(int state)
         {
             if(tFlag) 
             {
-                SPI_MasterTransmit(data);
+                SPI_MasterTransmit(data, uCSelect - 1);
             }
             else
             {
-                data = spdrValue;
+                data = receivedData;
             }
         }
     }
@@ -84,6 +85,9 @@ int valueSM(int state)
                 LCD_DisplayString(8, "Spd:");
                 LCD_Cursor(spdCursor);
                 LCD_WriteData(speed + '0');
+                LCD_DisplayString(17, "uC:");
+                LCD_Cursor(21);
+                LCD_WriteData(uCSelect + '0');
 
                 data = (pattern << 4) | speed;
             }
@@ -112,6 +116,9 @@ int valueSM(int state)
                     case '4': speed = 4; break;
                     case '5': speed = 5; break;
                     case '6': speed = 6; break;
+                    case '7': uCSelect = 1; break; 
+                    case '8': uCSelect = 2; break;
+                    case '9': uCSelect = 3; break;
                     case 'A': pattern = 1; break;
                     case 'B': pattern = 2; break;
                     case 'C': pattern = 3; break;
@@ -142,6 +149,8 @@ int valueSM(int state)
                 LCD_WriteData(pattern + '0');
                 LCD_Cursor(spdCursor);
                 LCD_WriteData(speed + '0');
+                LCD_Cursor(21);
+                LCD_WriteData(uCSelect + '0');
                 
                 data = (pattern << 4) | speed;
             }
