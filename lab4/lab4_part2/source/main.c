@@ -70,7 +70,7 @@ void LEDH_Tick()
 
 void LEDS_Init()
 {
-    led_state = OFF;
+    sec_state = OFF;
 }
 
 void LEDS_Tick()
@@ -90,13 +90,13 @@ void LEDS_Tick()
     }
 }
 
-LedQuarterTask()
+void LedQuarterTask()
 {
     LEDQ_Init();
     for(;;)
     {
         LEDQ_Tick();
-        vTaskDelay(250);
+        vTaskDelay(2500);
     }
 }
 

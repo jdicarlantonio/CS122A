@@ -19,94 +19,54 @@
 
 enum LEDState 
 {
-    OFF,
-    ON
-} led_state, sec_state, half_state, quarter_state;
-// LED states for second, half second, and quarter second (1000, 500, and 250 ms)
+    SHIFT_RIGHT,
+    SHIFT_LEFT
+} led_state;
 
-void LEDQ_Init()
-{
-    quarter_state = OFF;
-}
-
-void LEDQ_Tick()
-{
-    // actions
-    switch(quarter_state)
-    {
-        case OFF: LED &= ~(1 << 4); break;
-        case ON: LED |= 0x10; break;
-    }
-    
-    // transitions
-    switch(quarter_state)
-    {
-        case OFF: quarter_state = ON; break;
-        case ON: quarter_state = OFF; break;
-    }
-}
-
-void LEDH_Init()
-{
-    half_state = OFF;
-}
-
-void LEDH_Tick()
-{
-    // actions
-    switch(half_state)
-    {
-        case OFF: LED &= ~(1 << 2); break;
-        case ON: LED |= 0x04; break;
-    }
-
-    // transitions
-    switch(half_state)
-    {
-        case OFF: half_state = ON; break; 
-        case ON: half_state = OFF; break; 
-    }
-}
 
 void LEDS_Init()
 {
-    led_state = OFF;
+    led_state = SHIFT_RIGHT;
 }
 
 void LEDS_Tick()
 {
+    static unsigned char value = 0x80;
+    static unsigned char count = 0;
+    static unsigned char shiftFlag = 1;
+
     // actions
-    switch(sec_state)
+    switch(led_state)
     {
-        case OFF: LED &= ~(1 << 0); break;
-        case ON: LED |= 0x01; break;
+        case SHIFT_RIGHT:
+        {
+            LED = value;
+            value >>= 1;
+            if(value == 0x01)
+            {
+                led_state = SHIFT_LEFT; 
+            }
+
+            break;
+        }
+        case SHIFT_LEFT:
+        {
+            LED = value;
+            value <<= 1;
+            if(value == 0x80)
+            {
+                led_state = SHIFT_RIGHT; 
+            }
+
+            break;
+        }
     }
 
     // transitions
-    switch(sec_state)
+    switch(led_state)
     {
-        case OFF: sec_state = ON; break;
-        case ON: sec_state = OFF; break;
-    }
-}
-
-LedQuarterTask()
-{
-    LEDQ_Init();
-    for(;;)
-    {
-        LEDQ_Tick();
-        vTaskDelay(250);
-    }
-}
-
-void LedHalfTask()
-{
-    LEDH_Init();
-    for(;;)
-    {
-        LEDH_Tick();
-        vTaskDelay(500);
+        case SHIFT_RIGHT: break;
+        case SHIFT_LEFT: break;
     }
 }
 
@@ -116,33 +76,9 @@ void LedSecTask()
     for(;;) 
     { 	
         LEDS_Tick();
-        vTaskDelay(1000); 
+        vTaskDelay(250); 
     } 
 }
-
-void StartQuarterPulse(unsigned portBASE_TYPE Priority) 
-{
-    xTaskCreate(
-        LedQuarterTask, 
-        (signed portCHAR *)"LedQuarterTask", 
-        configMINIMAL_STACK_SIZE, 
-        NULL, 
-        Priority, 
-        NULL 
-    );
-}	
-
-void StartHalfPulse(unsigned portBASE_TYPE Priority) 
-{
-    xTaskCreate(
-        LedHalfTask, 
-        (signed portCHAR *)"LedHalfTask", 
-        configMINIMAL_STACK_SIZE, 
-        NULL, 
-        Priority, 
-        NULL 
-    );
-}	
 
 void StartSecPulse(unsigned portBASE_TYPE Priority) 
 {
@@ -163,9 +99,7 @@ int main(void)
 
     //Start Tasks  
     StartSecPulse(1);
-    StartHalfPulse(1);
-    StartQuarterPulse(1);
-
+    
     //RunSchedular 
     vTaskStartScheduler(); 
 
