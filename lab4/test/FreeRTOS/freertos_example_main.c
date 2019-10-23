@@ -23,6 +23,36 @@ void LEDS_Init(){
 void LEDS_Tick(){
 	//Actions
 	switch(led_state){
+		case INIT:
+            PORTD = 0;
+            break;
+		case L0:
+            PORTD = 1;
+            break;
+		case L1:
+            PORTD = 2;
+            break;
+		case L2:
+            PORTD = 4;
+            break;
+		case L3:
+            PORTD = 8;
+            break;
+		case L4:
+            PORTD = 16;
+            break;
+		case L5:
+            PORTD = 32;
+            break;
+		case L6:
+            PORTD = 64;
+            break;
+		case L7:
+            PORTD = 128;
+            break;
+		default:
+            PORTD = 0;
+            break;
 	}
 	//Transitions
 	switch(led_state){
