@@ -39,8 +39,6 @@ void SPI_ServantInit(void)
     SREG |= 0x80;
 }
 
-unsigned char flag = 0xFF;
-
 ISR(SPI_STC_vect)
 {
 //    while(!(SPSR & (1 << SPIF)));
@@ -48,15 +46,6 @@ ISR(SPI_STC_vect)
 //    PORTB |= (0 << 4);
 //    return SPDR;
     spdrValue = SPDR;
-
-    if(spdrValue == 0x40)
-    {
-        flag = 0xFF; 
-    }
-    if(spdrValue == 0x20)
-    {
-        flag = 0x00; 
-    }
 }
 
 #endif

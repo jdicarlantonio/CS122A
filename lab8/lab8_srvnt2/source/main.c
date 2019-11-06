@@ -18,6 +18,21 @@
 unsigned char lightValue = 0;
 unsigned char average = 0;
 
+/*
+ISR(PCINT13_vect)
+{
+    if(flag)
+    {
+        average = spdrValue; 
+    }
+    else
+    {
+        lightValue = spdrValue; 
+    }
+
+    flag = ~flag;
+}
+*/
 int main(void) 
 {
     DDRD = 0xFF; PORTD = 0x00;
@@ -34,7 +49,14 @@ int main(void)
 
     while (1) 
     {
-        average = spdrValue; 
+/*        if(flag)
+        { */
+            average = spdrValue; 
+//        }
+/*        else
+        { 
+            lightValue = spdrValue; 
+        } */
 
         hundred = average / 100;
         ten = average / 10;
@@ -47,6 +69,19 @@ int main(void)
         LCD_WriteData(ten + '0');
         LCD_Cursor(3);
         LCD_WriteData(one + '0');
+/*
+        hundred = lightValue / 100;
+        ten = lightValue / 10;
+        ten %= 10;
+        one = lightValue % 10;
+
+        LCD_Cursor(17);
+        LCD_WriteData(hundred + '0');
+        LCD_Cursor(18);
+        LCD_WriteData(ten + '0');
+        LCD_Cursor(19);
+        LCD_WriteData(one + '0');
+*/
     }
 
     return 1;
